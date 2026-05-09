@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import { SUPERMARKETS, LABELS, SUPERMARKET_WEIGHTS } from './data/businessRules.js';
+import { SUPERMARKETS, LABELS, SUPERMARKET_WEIGHTS, SUPERMARKET_LABELS } from './data/businessRules.js';
 import { calculateBoxes, calculatePallets, sumMultiInput } from './utils/calculations.js';
 
-const STORAGE_KEY = 'mushroom-calc-v2';
+const STORAGE_KEY = 'mushroom-calc-v3';
 const DEFAULT_QUICK  = { supermarket: 'Coles', weight: '200g', label: 'VIC', trays: '' };
 const DEFAULT_FORM   = { supermarket: 'Coles', weight: '200g', label: 'VIC', input: '' };
 
@@ -53,12 +53,15 @@ function ResultCard({ supermarket, weight, label, trays }) {
 
 function OrderForm({ value, onChange, onSubmit, submitLabel }) {
   const weights = SUPERMARKET_WEIGHTS[value.supermarket] || [];
+  const labels = SUPERMARKET_LABELS[value.supermarket] || [];
 
   function handleSupermarketChange(e) {
     const s = e.target.value;
-    const available = SUPERMARKET_WEIGHTS[s] || [];
-    const w = available.includes(value.weight) ? value.weight : available[0];
-    onChange({ ...value, supermarket: s, weight: w });
+    const availableWeights = SUPERMARKET_WEIGHTS[s] || [];
+    const availableLabels = SUPERMARKET_LABELS[s] || [];
+    const w = availableWeights.includes(value.weight) ? value.weight : availableWeights[0];
+    const l = availableLabels.includes(value.label) ? value.label : availableLabels[0];
+    onChange({ ...value, supermarket: s, weight: w, label: l });
   }
 
   return (
@@ -89,7 +92,7 @@ function OrderForm({ value, onChange, onSubmit, submitLabel }) {
             value={value.label}
             onChange={(e) => onChange({ ...value, label: e.target.value })}
           >
-            {LABELS.map((l) => (
+            {labels.map((l) => (
               <option key={l}>{l}</option>
             ))}
           </select>
@@ -119,12 +122,15 @@ function OrderForm({ value, onChange, onSubmit, submitLabel }) {
 
 function QuickForm({ value, onChange }) {
   const weights = SUPERMARKET_WEIGHTS[value.supermarket] || [];
+  const labels = SUPERMARKET_LABELS[value.supermarket] || [];
 
   function handleSupermarketChange(e) {
     const s = e.target.value;
-    const available = SUPERMARKET_WEIGHTS[s] || [];
-    const w = available.includes(value.weight) ? value.weight : available[0];
-    onChange({ ...value, supermarket: s, weight: w });
+    const availableWeights = SUPERMARKET_WEIGHTS[s] || [];
+    const availableLabels = SUPERMARKET_LABELS[s] || [];
+    const w = availableWeights.includes(value.weight) ? value.weight : availableWeights[0];
+    const l = availableLabels.includes(value.label) ? value.label : availableLabels[0];
+    onChange({ ...value, supermarket: s, weight: w, label: l });
   }
 
   return (
@@ -145,7 +151,7 @@ function QuickForm({ value, onChange }) {
         <label>
           Label
           <select value={value.label} onChange={(e) => onChange({ ...value, label: e.target.value })}>
-            {LABELS.map((l) => <option key={l}>{l}</option>)}
+            {labels.map((l) => <option key={l}>{l}</option>)}
           </select>
         </label>
       </div>
@@ -176,15 +182,11 @@ function TotalSummary({ orders }) {
     );
     const displayBoxes = Math.round(rawBoxes * 10) / 10;
     const { fullPallets } = calculatePallets(rawBoxes);
-    return { weight, displayBoxes, fullPallets };
+    return { weight, displayBoxes, fullPallets, rawBoxes };
   });
 
-  const grandRawBoxes = orders.reduce(
-    (sum, o) => sum + calculateBoxes(o.supermarket, o.weight, o.trays),
-    0
-  );
-  const grandBoxes = Math.round(grandRawBoxes * 10) / 10;
-  const { fullPallets: grandPallets } = calculatePallets(grandRawBoxes);
+  const grandBoxes = Math.round(rows.reduce((sum, r) => sum + r.rawBoxes, 0) * 10) / 10;
+  const grandPallets = rows.reduce((sum, r) => sum + r.fullPallets, 0);
 
   return (
     <div className="summary-card">
@@ -205,6 +207,104 @@ function TotalSummary({ orders }) {
           <span>Pallets: <strong className="summary-num">{grandPallets}</strong></span>
         </span>
       </div>
+    </div>
+  );
+}
+
+function OrderCard({ order, onRemove, onUpdate }) {
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    supermarket: order.supermarket,
+    weight: order.weight,
+    label: order.label,
+    input: String(order.trays),
+  });
+
+  function handleSupermarketChange(e) {
+    const s = e.target.value;
+    const availableWeights = SUPERMARKET_WEIGHTS[s] || [];
+    const availableLabels = SUPERMARKET_LABELS[s] || [];
+    const w = availableWeights.includes(editForm.weight) ? editForm.weight : availableWeights[0];
+    const l = availableLabels.includes(editForm.label) ? editForm.label : availableLabels[0];
+    setEditForm((prev) => ({ ...prev, supermarket: s, weight: w, label: l }));
+  }
+
+  function handleSave() {
+    const trays = sumMultiInput(editForm.input);
+    if (!trays) return;
+    onUpdate({ ...order, supermarket: editForm.supermarket, weight: editForm.weight, label: editForm.label, trays });
+    setEditing(false);
+  }
+
+  function handleCancel() {
+    setEditForm({
+      supermarket: order.supermarket,
+      weight: order.weight,
+      label: order.label,
+      input: String(order.trays),
+    });
+    setEditing(false);
+  }
+
+  const weights = SUPERMARKET_WEIGHTS[editForm.supermarket] || [];
+  const labels = SUPERMARKET_LABELS[editForm.supermarket] || [];
+
+  return (
+    <div className="order-item">
+      {editing ? (
+        <div className="order-form">
+          <div className="form-row">
+            <label>
+              Supermarket
+              <select value={editForm.supermarket} onChange={handleSupermarketChange}>
+                {SUPERMARKETS.map((s) => <option key={s}>{s}</option>)}
+              </select>
+            </label>
+            <label>
+              Weight
+              <select value={editForm.weight} onChange={(e) => setEditForm((prev) => ({ ...prev, weight: e.target.value }))}>
+                {weights.map((w) => <option key={w}>{w}</option>)}
+              </select>
+            </label>
+            <label>
+              Label
+              <select value={editForm.label} onChange={(e) => setEditForm((prev) => ({ ...prev, label: e.target.value }))}>
+                {labels.map((l) => <option key={l}>{l}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="form-row input-row">
+            <label className="label-trays">
+              Trays
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="e.g. 12 15 9"
+                value={editForm.input}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, input: e.target.value }))}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
+              />
+            </label>
+          </div>
+          <div className="card-actions">
+            <button className="btn-primary card-action-save" onClick={handleSave}>Save</button>
+            <button className="btn-remove" onClick={handleCancel}>Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <ResultCard
+            supermarket={order.supermarket}
+            weight={order.weight}
+            label={order.label}
+            trays={order.trays}
+          />
+          <div className="card-actions">
+            <button className="btn-edit" onClick={() => setEditing(true)}>Edit</button>
+            <button className="btn-remove" onClick={onRemove}>Remove</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -234,6 +334,10 @@ export default function App() {
 
   function resetQuick() {
     setQuickForm({ ...DEFAULT_QUICK });
+  }
+
+  function updateOrder(id, updated) {
+    setOrders((prev) => prev.map((o) => (o.id === id ? updated : o)));
   }
 
   function resetDetailed() {
@@ -299,20 +403,12 @@ export default function App() {
             {orders.length > 0 && (
               <div className="orders-list">
                 {orders.map((order) => (
-                  <div key={order.id} className="order-item">
-                    <ResultCard
-                      supermarket={order.supermarket}
-                      weight={order.weight}
-                      label={order.label}
-                      trays={order.trays}
-                    />
-                    <button
-                      className="btn-remove"
-                      onClick={() => removeOrder(order.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    onRemove={() => removeOrder(order.id)}
+                    onUpdate={(updated) => updateOrder(order.id, updated)}
+                  />
                 ))}
               </div>
             )}

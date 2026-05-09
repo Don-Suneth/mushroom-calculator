@@ -26,9 +26,15 @@ export function calculateBoxes(supermarket, weight, trays) {
 
 export function calculatePallets(rawBoxes) {
   const totalBoxes = Math.ceil(rawBoxes);
-  const fullPallets = Math.floor(totalBoxes / BOXES_PER_PALLET);
+  if (totalBoxes <= 0) return { fullPallets: 0, remainder: 0, showLastPallet: false };
+  const wholePallets = Math.floor(totalBoxes / BOXES_PER_PALLET);
   const remainder = totalBoxes % BOXES_PER_PALLET;
-  const showLastPallet = totalBoxes >= BOXES_PER_PALLET && remainder > 0;
+  const halfThreshold = BOXES_PER_PALLET / 2; // 36
+  const fullPallets =
+    remainder === 0 ? wholePallets :
+    remainder <= halfThreshold ? wholePallets + 0.5 :
+    wholePallets + 1;
+  const showLastPallet = remainder > 0;
   return { fullPallets, remainder, showLastPallet };
 }
 

@@ -209,6 +209,42 @@ input[type='text']:focus {
   background: var(--red-light);
 }
 
+.btn-edit {
+  display: block;
+  width: 100%;
+  padding: 0.4rem;
+  background: transparent;
+  color: var(--green);
+  border: 1.5px solid var(--green);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.btn-edit:active {
+  background: var(--green-light);
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.card-actions .btn-edit,
+.card-actions .btn-remove {
+  flex: 1;
+  margin-top: 0;
+}
+
+.card-action-save {
+  flex: 1;
+  height: 36px;
+  padding: 0;
+}
+
 /* ── Result card ─────────────────────────────────────────── */
 .result-card {
   background: var(--white);

@@ -5,6 +5,15 @@ export const SUPERMARKETS = ['Coles', 'Woolworths', 'Aldi', 'Drakes', 'IGA', 'Co
 
 export const LABELS = ['VIC', 'TRG', 'QLD', 'SA', 'CP', 'WA', 'NSW'];
 
+export const SUPERMARKET_LABELS = {
+  Coles:      ['VIC', 'SA', 'CP', 'WA', 'NSW'],
+  Woolworths: ['TRG', 'QLD', 'SA', 'WA'],
+  Aldi:       ['SA', 'NSW'],
+  Drakes:     ['SA', 'QLD'],
+  IGA:        ['SA'],
+  Costco:     ['NSW', 'SA'],
+};
+
 // Available weights per supermarket (order matters — first is the default)
 export const SUPERMARKET_WEIGHTS = {
   Coles:      ['200g', '500g', 'Brown'],
