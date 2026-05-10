@@ -347,7 +347,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Mushroom Calculator</h1>
+        <h1>Production Optimisation Calculator</h1>
       </header>
 
       <nav className="mode-tabs">
