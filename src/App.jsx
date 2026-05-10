@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import { SUPERMARKETS, LABELS, SUPERMARKET_WEIGHTS, SUPERMARKET_LABELS, SUPERMARKET_COLOURS } from './data/businessRules.js';
-import { calculateBoxes, calculatePallets, sumMultiInput } from './utils/calculations.js';
+import { calculateBoxes, calculatePallets, parseNumberInput } from './utils/calculations.js';
 
 // Version suffix lets us reset persisted state cleanly if the saved data shape changes.
 const STORAGE_KEY = 'mushroom-calc-v3';
@@ -162,9 +162,9 @@ function QuickForm({ value, onChange }) {
         <label className="label-trays">
           Trays
           <input
-            type="number"
-            min="1"
-            placeholder="Enter trays"
+            type="text"
+            inputMode="decimal"
+            placeholder="e.g. 12 15 9"
             value={value.trays}
             onChange={(e) => onChange({ ...value, trays: e.target.value })}
           />
@@ -233,7 +233,7 @@ function OrderCard({ order, onRemove, onUpdate }) {
   }
 
   function handleSave() {
-    const trays = sumMultiInput(editForm.input);
+    const trays = parseNumberInput(editForm.input);
     if (!trays) return;
     onUpdate({ ...order, supermarket: editForm.supermarket, weight: editForm.weight, label: editForm.label, trays });
     setEditing(false);
@@ -329,7 +329,7 @@ export default function App() {
   }, [mode, quickForm, orders]);
 
   function handleAddOrder() {
-    const trays = sumMultiInput(detailForm.input);
+    const trays = parseNumberInput(detailForm.input);
     if (!trays) return;
     setOrders((prev) => [...prev, { ...detailForm, trays, id: Date.now() }]);
     setDetailForm((prev) => ({ ...prev, input: '' }));
@@ -386,12 +386,12 @@ export default function App() {
             </div>
             <QuickForm value={quickForm} onChange={setQuickForm} />
             {/* Quick mode auto-calculates on every keystroke — no submit button needed */}
-            {Number(quickForm.trays) > 0 && (
+            {parseNumberInput(quickForm.trays) > 0 && (
               <ResultCard
                 supermarket={quickForm.supermarket}
                 weight={quickForm.weight}
                 label={quickForm.label}
-                trays={Number(quickForm.trays)}
+                trays={parseNumberInput(quickForm.trays)}
               />
             )}
           </section>

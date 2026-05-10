@@ -47,14 +47,14 @@ export function calculatePallets(rawBoxes) {
   return { fullPallets, remainder, showLastPallet };
 }
 
-// Accepts space-separated numbers (e.g. "12 15 9 8") and sums them.
-// Workers often count trays in multiple picking runs and can enter each partial
-// count without needing a separate calculator between runs.
-export function sumMultiInput(input) {
+// Parses a multi-value tray input and returns the total.
+// Accepts spaces, commas, and + as delimiters so workers can enter counts
+// however feels natural on a mobile keyboard: "12 15 9", "12,15,9", "12+15+9".
+export function parseNumberInput(input) {
   if (!input || !input.trim()) return 0;
   const nums = input
     .trim()
-    .split(/\s+/)
+    .split(/[\s,+]+/)
     .map(Number)
     .filter((n) => !isNaN(n) && n > 0);
   return nums.reduce((sum, n) => sum + n, 0);
