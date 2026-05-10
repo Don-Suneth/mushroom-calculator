@@ -20,7 +20,7 @@ function loadSaved() {
 
 function ResultCard({ supermarket, weight, label, trays }) {
   const boxes = calculateBoxes(supermarket, weight, trays);
-  const displayBoxes = Math.round(boxes * 10) / 10;
+  const displayBoxes = Math.round(boxes);
   const { fullPallets, remainder, showLastPallet } = calculatePallets(boxes);
 
   return (
@@ -182,12 +182,12 @@ function TotalSummary({ orders }) {
       (sum, o) => sum + calculateBoxes(o.supermarket, o.weight, o.trays),
       0
     );
-    const displayBoxes = Math.round(rawBoxes * 10) / 10;
+    const displayBoxes = Math.round(rawBoxes);
     const { fullPallets } = calculatePallets(rawBoxes);
     return { weight, displayBoxes, fullPallets, rawBoxes };
   });
 
-  const grandBoxes = Math.round(rows.reduce((sum, r) => sum + r.rawBoxes, 0) * 10) / 10;
+  const grandBoxes = Math.round(rows.reduce((sum, r) => sum + r.rawBoxes, 0));
   const grandPallets = rows.reduce((sum, r) => sum + r.fullPallets, 0);
 
   return (
