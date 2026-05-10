@@ -26,6 +26,9 @@ under-packing, which wastes produce and delays dispatch.
   signal for dispatchers who need to plan truck loads
 - Works on mobile/tablet with large tap targets so it is usable with gloves
 - State persists through page refreshes so workers don't lose results
+- Each supermarket has a distinct colour on its result card (border + header
+  tint) so workers can scan a list of orders by retailer without reading every
+  label — reduces errors during busy dispatch periods
 
 ---
 
@@ -52,6 +55,7 @@ under-packing, which wastes produce and delays dispatch.
 | Multi-number input parsing | `sumMultiInput()` in `src/utils/calculations.js` |
 | localStorage persistence | `loadSaved()` and `useEffect` in `src/App.jsx` |
 | Result display (boxes, pallets, red alert) | `ResultCard` component in `src/App.jsx` |
+| Supermarket colour mapping | `SUPERMARKET_COLOURS` in `src/data/businessRules.js` |
 
 ---
 

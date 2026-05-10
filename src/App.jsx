@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import { SUPERMARKETS, LABELS, SUPERMARKET_WEIGHTS, SUPERMARKET_LABELS } from './data/businessRules.js';
+import { SUPERMARKETS, LABELS, SUPERMARKET_WEIGHTS, SUPERMARKET_LABELS, SUPERMARKET_COLOURS } from './data/businessRules.js';
 import { calculateBoxes, calculatePallets, sumMultiInput } from './utils/calculations.js';
 
 // Version suffix lets us reset persisted state cleanly if the saved data shape changes.
@@ -22,11 +22,12 @@ function ResultCard({ supermarket, weight, label, trays }) {
   const boxes = calculateBoxes(supermarket, weight, trays);
   const displayBoxes = Math.round(boxes);
   const { fullPallets, remainder, showLastPallet } = calculatePallets(boxes);
+  const accent = SUPERMARKET_COLOURS[supermarket] ?? '#64748b';
 
   return (
-    <div className="result-card">
+    <div className="result-card" style={{ '--sm-accent': accent }}>
       <div className="result-header">
-        <span className="tag">{supermarket}</span>
+        <span className="tag tag-supermarket">{supermarket}</span>
         <span className="tag">{weight}</span>
         <span className="tag tag-label">{label}</span>
       </div>

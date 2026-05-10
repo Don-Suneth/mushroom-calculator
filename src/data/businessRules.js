@@ -28,3 +28,13 @@ export const SUPERMARKET_WEIGHTS = {
   IGA:        ['200g', '500g', 'Brown'],
   Costco:     [ '650g'],
 };
+
+// Accent colour per supermarket — used only for the result card's left border stripe.
+export const SUPERMARKET_COLOURS = {
+  Coles:      '#c62828',
+  Woolworths: '#2e7d32',
+  Aldi:       '#1565c0',
+  Drakes:     '#e65100',
+  IGA:        '#6a1010',
+  Costco:     '#1a237e',
+};
