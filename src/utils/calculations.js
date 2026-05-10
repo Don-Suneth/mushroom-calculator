@@ -54,7 +54,7 @@ export function parseNumberInput(input) {
   if (!input || !input.trim()) return 0;
   const nums = input
     .trim()
-    .split(/[\s,+]+/)
+    .split(/[.,+\s]+/)   // dot treated as separator — handles iPhone decimal keyboard
     .map(Number)
     .filter((n) => !isNaN(n) && n > 0);
   return nums.reduce((sum, n) => sum + n, 0);

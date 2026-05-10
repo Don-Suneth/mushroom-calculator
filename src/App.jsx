@@ -109,7 +109,8 @@ function OrderForm({ value, onChange, onSubmit, submitLabel }) {
             inputMode="decimal"
             placeholder="e.g. 12 15 9 8"
             value={value.input}
-            onChange={(e) => onChange({ ...value, input: e.target.value.replace(/\./g, ',') })}
+            onInput={(e) => onChange({ ...value, input: e.currentTarget.value })}
+            onChange={(e) => onChange({ ...value, input: e.target.value })}
             onKeyDown={(e) => {
               if (e.key === 'Enter') onSubmit();
             }}
@@ -166,7 +167,8 @@ function QuickForm({ value, onChange }) {
             inputMode="decimal"
             placeholder="e.g. 12 15 9"
             value={value.trays}
-            onChange={(e) => onChange({ ...value, trays: e.target.value.replace(/\./g, ',') })}
+            onInput={(e) => onChange({ ...value, trays: e.currentTarget.value })}
+            onChange={(e) => onChange({ ...value, trays: e.target.value })}
           />
         </label>
       </div>
@@ -284,7 +286,8 @@ function OrderCard({ order, onRemove, onUpdate }) {
                 inputMode="decimal"
                 placeholder="e.g. 12 15 9"
                 value={editForm.input}
-                onChange={(e) => setEditForm((prev) => ({ ...prev, input: e.target.value.replace(/\./g, ',') }))}
+                onInput={(e) => setEditForm((prev) => ({ ...prev, input: e.currentTarget.value }))}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, input: e.target.value }))}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
               />
             </label>
