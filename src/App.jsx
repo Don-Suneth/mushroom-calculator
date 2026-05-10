@@ -3,10 +3,12 @@ import './App.css';
 import { SUPERMARKETS, LABELS, SUPERMARKET_WEIGHTS, SUPERMARKET_LABELS } from './data/businessRules.js';
 import { calculateBoxes, calculatePallets, sumMultiInput } from './utils/calculations.js';
 
+// Version suffix lets us reset persisted state cleanly if the saved data shape changes.
 const STORAGE_KEY = 'mushroom-calc-v3';
 const DEFAULT_QUICK  = { supermarket: 'Coles', weight: '200g', label: 'VIC', trays: '' };
 const DEFAULT_FORM   = { supermarket: 'Coles', weight: '200g', label: 'VIC', input: '' };
 
+// Try/catch guards against corrupt or outdated JSON in localStorage.
 function loadSaved() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -314,9 +316,13 @@ export default function App() {
 
   const [mode, setMode] = useState(saved?.mode ?? 'quick');
   const [quickForm, setQuickForm] = useState(saved?.quickForm ?? { ...DEFAULT_QUICK });
+  // detailForm is intentionally not persisted — workers should always start
+  // a new order entry fresh rather than accidentally re-submitting old values.
   const [detailForm, setDetailForm] = useState({ ...DEFAULT_FORM });
   const [orders, setOrders] = useState(saved?.orders ?? []);
 
+  // Sync to localStorage whenever mode, quickForm, or orders change so state
+  // survives a page refresh on the production floor tablet.
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode, quickForm, orders }));
   }, [mode, quickForm, orders]);
@@ -378,6 +384,7 @@ export default function App() {
               <button className="btn-reset-section" onClick={resetQuick}>Reset</button>
             </div>
             <QuickForm value={quickForm} onChange={setQuickForm} />
+            {/* Quick mode auto-calculates on every keystroke — no submit button needed */}
             {Number(quickForm.trays) > 0 && (
               <ResultCard
                 supermarket={quickForm.supermarket}

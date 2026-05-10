@@ -1,10 +1,15 @@
-export const BOXES_PER_PALLET = 72;
-export const KG_PER_BOX = 4;
+// All production constants and lookup tables live here so any changes to pack
+// sizes, pallet limits, or supermarket constraints only need updating in one place.
+
+export const BOXES_PER_PALLET = 72;  // physical pallet capacity on the production floor
+export const KG_PER_BOX = 4;         // standard box weight; used for load projections
 
 export const SUPERMARKETS = ['Coles', 'Woolworths', 'Aldi', 'Drakes', 'IGA', 'Costco'];
 
 export const LABELS = ['VIC', 'TRG', 'QLD', 'SA', 'CP', 'WA', 'NSW'];
 
+// Each supermarket ships to a specific subset of distribution labels —
+// filtering here prevents workers from selecting invalid label combinations.
 export const SUPERMARKET_LABELS = {
   Coles:      ['VIC', 'SA', 'CP', 'WA', 'NSW'],
   Woolworths: ['TRG', 'QLD', 'SA', 'WA'],
