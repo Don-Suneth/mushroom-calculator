@@ -105,7 +105,7 @@ function OrderForm({ value, onChange, onSubmit, submitLabel }) {
           Trays
           <input
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             placeholder="e.g. 12 15 9 8"
             value={value.input}
             onChange={(e) => onChange({ ...value, input: e.target.value })}
@@ -280,7 +280,7 @@ function OrderCard({ order, onRemove, onUpdate }) {
               Trays
               <input
                 type="text"
-                inputMode="numeric"
+                inputMode="decimal"
                 placeholder="e.g. 12 15 9"
                 value={editForm.input}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, input: e.target.value }))}
